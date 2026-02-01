@@ -133,7 +133,8 @@ const WorkCard = ({
                 <img
                   src={coverImage}
                   alt="Cover Image"
-                  loading="lazy"
+                  loading={priority ? "eager" : "lazy"}
+                  fetchPriority={priority ? "high" : "auto"}
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
