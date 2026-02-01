@@ -9,8 +9,8 @@ const worksData = [
     year: "2025",
     role: "Lead Designer",
     services: ["Website Design", "Product Design", "Branding", "Development"],
-    backgroundImage: "/images/work-bg-1.png",
-    coverImage: "/images/work-cover-1.png",
+    backgroundImage: "/images/work-bg-1.webp",
+    coverImage: "/images/work-cover-1.webp",
     href: "./works/archin",
   },
   {
@@ -20,8 +20,8 @@ const worksData = [
     year: "2018",
     role: "Logo Designer",
     services: ["Designing", "Branding", "Redesigning", "Development"],
-    backgroundImage: "/images/work-bg-2.png",
-    coverImage: "/images/work-cover-2.png",
+    backgroundImage: "/images/work-bg-2.webp",
+    coverImage: "/images/work-cover-2.webp",
     href: "./works/vntnr",
   },
   {
@@ -31,8 +31,8 @@ const worksData = [
     year: "2024",
     role: "Creative Director",
     services: ["UI/UX Design", "Branding", "Motion Design", "Development"],
-    backgroundImage: "/images/work-bg-3.png",
-    coverImage: "/images/work-cover-1.png",
+    backgroundImage: "/images/work-bg-3.webp",
+    coverImage: "/images/work-cover-1.webp",
     href: "./works/luxora",
   },
 ];
