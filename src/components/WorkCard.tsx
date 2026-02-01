@@ -86,16 +86,8 @@ const WorkCard = ({
       {/* Blur Overlay */}
       <div className="absolute inset-0 rounded-[32px] works-card-blur-overlay" />
 
-      {/* Noise Overlay */}
-      <div className="absolute inset-0 rounded-[32px] overflow-hidden noise-overlay pointer-events-none">
-        <img
-          src="/images/noise-texture.png"
-          alt=""
-          loading="lazy"
-          className="w-full h-full object-fill"
-        />
-      </div>
-
+      {/* CSS Noise Overlay - no image needed */}
+      <div className="absolute inset-0 rounded-[32px] noise-overlay pointer-events-none" />
       {/* Content Container */}
       <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-16 p-8 lg:p-12">
         {/* Left Column */}
