@@ -122,22 +122,20 @@ const WorkCard = ({
         </div>
 
         {/* Right Column */}
-        <div className="flex flex-col sm:flex-row gap-6 lg:gap-8">
+        <div className="flex flex-col sm:flex-row gap-6 lg:gap-8 items-center">
           {/* Cover Image */}
           <a
             href={href}
-            className={`works-cover-border-outer rounded-3xl overflow-hidden flex-shrink-0 group scroll-reveal-scale delay-200 ${isVisible ? "visible" : ""}`}
+            className={`works-cover-frame flex-shrink-0 group scroll-reveal-scale delay-200 ${isVisible ? "visible" : ""}`}
           >
-            <div className="works-cover-border-inner rounded-3xl overflow-hidden">
-              <div className="relative w-[200px] sm:w-[250px] lg:w-[300px] aspect-[4/5] overflow-hidden rounded-3xl">
-                <img
-                  src={coverImage}
-                  alt="Cover Image"
-                  loading={priority ? "eager" : "lazy"}
-                  fetchPriority={priority ? "high" : "auto"}
-                  className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+            <div className="works-cover-image-wrapper">
+              <img
+                src={coverImage}
+                alt="Cover Image"
+                loading={priority ? "eager" : "lazy"}
+                fetchPriority={priority ? "high" : "auto"}
+                className="works-cover-image transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
           </a>
 

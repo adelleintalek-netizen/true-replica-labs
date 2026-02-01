@@ -159,12 +159,44 @@
     background-color: rgba(12, 12, 12, 0.4);
   }
 
-  .works-cover-border-outer {
-    border: 1px solid rgba(12, 12, 12, 0.82);
+  /* Cover image frame with auto-fit border */
+  .works-cover-frame {
+    @apply relative inline-flex items-center justify-center;
+    padding: 8px;
+    border-radius: 24px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 0 0 1px rgba(12, 12, 12, 0.4),
+      0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
-  .works-cover-border-inner {
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  .works-cover-image-wrapper {
+    @apply relative overflow-hidden;
+    border-radius: 16px;
+    width: 200px;
+    aspect-ratio: 4 / 5;
+  }
+
+  @media (min-width: 640px) {
+    .works-cover-image-wrapper {
+      width: 250px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .works-cover-image-wrapper {
+      width: 300px;
+    }
+  }
+
+  .works-cover-image {
+    @apply w-full h-full object-cover object-center;
+    border-radius: 16px;
   }
 
   /* Letter animation base */
