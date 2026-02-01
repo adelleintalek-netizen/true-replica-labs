@@ -1,5 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import WorkCard from "./WorkCard";
 
 const worksData = [
@@ -38,113 +37,66 @@ const worksData = [
   },
 ];
 
+const useScrollReveal = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+};
+
 const WorksSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
 
   return (
-    <section ref={sectionRef} className="relative bg-background py-16 lg:py-24">
+    <section className="relative bg-background py-16 lg:py-24">
       <div className="max-w-[1920px] mx-auto px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-12 lg:mb-16">
+        <div ref={headerRef} className="mb-12 lg:mb-16">
           {/* Subtitle */}
-          <motion.p
-            className="works-subtitle mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
+          <p className={`works-subtitle mb-4 scroll-reveal ${headerVisible ? "visible" : ""}`}>
             (Why clients love Agero)
-          </motion.p>
+          </p>
 
           {/* Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
+          <div className={`scroll-reveal delay-100 ${headerVisible ? "visible" : ""}`}>
             <h2 className="text-4xl lg:text-6xl xl:text-7xl font-semibold tracking-tight">
               <span className="works-heading-gradient">Recent Works</span>
             </h2>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Cards Container */}
+        {/* Cards Container - Sticky Stack */}
         <div className="space-y-8 lg:space-y-0">
           {worksData.map((work, index) => (
-            <StickyCard
+            <div
               key={work.brandName}
-              index={index}
-              scrollYProgress={scrollYProgress}
-              totalCards={worksData.length}
+              className="lg:sticky pb-8 lg:pb-16"
+              style={{
+                top: `${80 + index * 20}px`,
+                zIndex: index + 1,
+              }}
             >
-              <WorkCard
-                index={index + 1}
-                total={worksData.length}
-                {...work}
-              />
-            </StickyCard>
+              <WorkCard index={index + 1} total={worksData.length} {...work} />
+            </div>
           ))}
         </div>
       </div>
     </section>
-  );
-};
-
-interface StickyCardProps {
-  children: React.ReactNode;
-  index: number;
-  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
-  totalCards: number;
-}
-
-const StickyCard = ({
-  children,
-  index,
-  scrollYProgress,
-  totalCards,
-}: StickyCardProps) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // Calculate scroll ranges for each card
-  const cardStart = index / totalCards;
-  const cardEnd = (index + 1) / totalCards;
-
-  // Scale down slightly as we scroll past
-  const scale = useTransform(
-    scrollYProgress,
-    [cardStart, cardEnd],
-    [1, index === totalCards - 1 ? 1 : 0.95]
-  );
-
-  // Fade out as we scroll past (except last card)
-  const opacity = useTransform(
-    scrollYProgress,
-    [cardStart, cardEnd - 0.05, cardEnd],
-    [1, 1, index === totalCards - 1 ? 1 : 0.6]
-  );
-
-  // Calculate top offset for stacking effect
-  const topOffset = 80 + index * 20;
-
-  return (
-    <motion.div
-      ref={cardRef}
-      className="lg:sticky"
-      style={{
-        top: `${topOffset}px`,
-        scale,
-        opacity,
-        zIndex: index + 1,
-      }}
-    >
-      <div className="pb-8 lg:pb-16">{children}</div>
-    </motion.div>
   );
 };
 

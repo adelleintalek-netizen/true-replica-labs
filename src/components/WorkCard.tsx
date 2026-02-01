@@ -1,5 +1,4 @@
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface WorkCardProps {
   index: number;
@@ -14,27 +13,42 @@ interface WorkCardProps {
   href: string;
 }
 
-const LetterReveal = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+const LetterReveal = ({ text, baseDelay = 0 }: { text: string; baseDelay?: number }) => {
   return (
     <span className="whitespace-nowrap">
       {text.split("").map((letter, i) => (
-        <motion.span
+        <span
           key={i}
           className="letter-animate"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{
-            duration: 0.4,
-            delay: delay + i * 0.05,
-            ease: [0.25, 0.1, 0.25, 1],
-          }}
+          style={{ animationDelay: `${baseDelay + i * 0.05}s` }}
         >
           {letter}
-        </motion.span>
+        </span>
       ))}
     </span>
   );
+};
+
+const useScrollReveal = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: "-50px" }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
 };
 
 const WorkCard = ({
@@ -49,25 +63,22 @@ const WorkCard = ({
   coverImage,
   href,
 }: WorkCardProps) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: true, margin: "-100px" });
+  const { ref: cardRef, isVisible } = useScrollReveal();
 
   const formattedIndex = String(index).padStart(2, "0");
   const formattedTotal = String(total).padStart(2, "0");
 
   return (
-    <motion.div
+    <div
       ref={cardRef}
-      className="works-card"
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      className={`works-card scroll-reveal ${isVisible ? "visible" : ""}`}
     >
       {/* Background Image */}
       <div className="absolute inset-0 rounded-[32px] overflow-hidden">
         <img
           src={backgroundImage}
           alt="BG Image"
+          loading="lazy"
           className="w-full h-full object-cover object-center"
         />
       </div>
@@ -79,7 +90,8 @@ const WorkCard = ({
       <div className="absolute inset-0 rounded-[32px] overflow-hidden noise-overlay pointer-events-none">
         <img
           src="/images/noise-texture.png"
-          alt="noise"
+          alt=""
+          loading="lazy"
           className="w-full h-full object-fill"
         />
       </div>
@@ -89,71 +101,52 @@ const WorkCard = ({
         {/* Left Column */}
         <div className="flex flex-col justify-between flex-1 min-h-[300px] lg:min-h-[400px]">
           {/* Description */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+          <div className={`scroll-reveal delay-100 ${isVisible ? "visible" : ""}`}>
             <p className="works-card-content-text text-sm leading-relaxed max-w-md">
               {description}
             </p>
-          </motion.div>
+          </div>
 
           {/* Brand Section */}
           <div className="mt-auto">
             {/* Counter */}
-            <motion.div
-              className="flex items-center gap-1 pb-4 border-b works-card-border"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <div className={`flex items-center gap-1 pb-4 border-b works-card-border scroll-reveal delay-200 ${isVisible ? "visible" : ""}`}>
               <span className="works-card-white text-sm">{formattedIndex}</span>
               <span className="works-card-white-muted text-sm">
                 / {formattedTotal}
               </span>
-            </motion.div>
+            </div>
 
             {/* Brand Name */}
-            <h2 className="works-card-white text-4xl lg:text-5xl font-semibold mt-4 tracking-tight">
-              <LetterReveal text={brandName} delay={0.3} />
-            </h2>
+            {isVisible && (
+              <h2 className="works-card-white text-4xl lg:text-5xl font-semibold mt-4 tracking-tight">
+                <LetterReveal text={brandName} baseDelay={0.3} />
+              </h2>
+            )}
           </div>
         </div>
 
         {/* Right Column */}
         <div className="flex flex-col sm:flex-row gap-6 lg:gap-8">
           {/* Cover Image */}
-          <motion.a
+          <a
             href={href}
-            className="works-cover-border-outer rounded-3xl overflow-hidden flex-shrink-0 group"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            whileHover={{ scale: 1.02 }}
+            className={`works-cover-border-outer rounded-3xl overflow-hidden flex-shrink-0 group scroll-reveal-scale delay-200 ${isVisible ? "visible" : ""}`}
           >
             <div className="works-cover-border-inner rounded-3xl overflow-hidden">
               <div className="relative w-[200px] sm:w-[250px] lg:w-[300px] aspect-[4/5] overflow-hidden rounded-3xl">
                 <img
                   src={coverImage}
                   alt="Cover Image"
+                  loading="lazy"
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             </div>
-          </motion.a>
+          </a>
 
           {/* Metadata */}
-          <motion.div
-            className="flex flex-col justify-between py-2"
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
+          <div className={`flex flex-col justify-between py-2 scroll-reveal-right delay-300 ${isVisible ? "visible" : ""}`}>
             {/* Top: Year & Role */}
             <div className="space-y-4">
               <div>
@@ -173,23 +166,20 @@ const WorkCard = ({
               <p className="works-card-white-muted text-sm mb-2">Services</p>
               <div className="space-y-1">
                 {services.map((service, i) => (
-                  <motion.p
+                  <p
                     key={i}
-                    className="works-card-white text-sm"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: 0.4 + i * 0.05 }}
+                    className={`works-card-white text-sm scroll-reveal ${isVisible ? "visible" : ""}`}
+                    style={{ transitionDelay: `${0.4 + i * 0.05}s` }}
                   >
                     {service}
-                  </motion.p>
+                  </p>
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
