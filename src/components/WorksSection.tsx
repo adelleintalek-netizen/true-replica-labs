@@ -91,7 +91,7 @@ const WorksSection = () => {
                 zIndex: index + 1,
               }}
             >
-              <WorkCard index={index + 1} total={worksData.length} {...work} />
+              <WorkCard index={index + 1} total={worksData.length} priority={index === 0} {...work} />
             </div>
           ))}
         </div>

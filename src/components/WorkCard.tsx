@@ -11,6 +11,7 @@ interface WorkCardProps {
   backgroundImage: string;
   coverImage: string;
   href: string;
+  priority?: boolean; // First card should load eagerly for LCP
 }
 
 const LetterReveal = ({ text, baseDelay = 0 }: { text: string; baseDelay?: number }) => {
@@ -62,6 +63,7 @@ const WorkCard = ({
   backgroundImage,
   coverImage,
   href,
+  priority = false,
 }: WorkCardProps) => {
   const { ref: cardRef, isVisible } = useScrollReveal();
 
@@ -78,7 +80,8 @@ const WorkCard = ({
         <img
           src={backgroundImage}
           alt="BG Image"
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           className="w-full h-full object-cover object-center"
         />
       </div>
